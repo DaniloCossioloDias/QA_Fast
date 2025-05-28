@@ -45,11 +45,21 @@ O objetivo dos testes foi validar o funcionamento da API no **upload de arquivos
 
 ---
 
+### **Teste 5 – Upload de CSV com Valores Inválidos**
+- **Arquivo usado:** `valores_errados.csv`
+- **Objetivo:** Testar a API com valores incorretos, como **texto na coluna de valores numéricos** e **valores negativos**.
+- **Resultado esperado:** API deve retornar **400 ou 500**, rejeitando os registros inválidos.
+- **Resultado obtido:** API retornou **200**, mas `"0 ordens de serviço inseridas com sucesso."`, indicando que **os registros foram descartados**.
+- **Erro identificado:** A API **não trata valores inválidos explicitamente**, descartando registros sem gerar erro.
+
+---
+
 ## **3️⃣ Análise dos Problemas**
-- **O upload do CSV não está inserindo registros no banco**
-- **A conversão da coluna `data` pode estar removendo todas as linhas**
-- **O pytest está alterando o retorno da API, convertendo erros 400 para 500**
-- **A consulta funciona corretamente quando os dados são inseridos manualmente**
+- **O upload do CSV não está inserindo registros no banco**  
+- **A conversão da coluna `data` pode estar removendo todas as linhas**  
+- **O pytest está alterando o retorno da API, convertendo erros 400 para 500**  
+- **A consulta funciona corretamente quando os dados são inseridos manualmente**  
+- **A API descarta registros inválidos sem retornar erro adequado**  
 
 ---
 
@@ -57,10 +67,4 @@ O objetivo dos testes foi validar o funcionamento da API no **upload de arquivos
 - **O `try-except` captura erros esperados e altera o retorno da API**, fazendo com que 400 seja convertido em 500.  
 - **A conversão de datas (`pd.to_datetime()`) pode estar removendo registros antes da inserção no banco.**  
 - **O `await db.commit()` pode não estar salvando corretamente os dados após o upload do CSV.**  
-- **O ambiente de testes pode estar usando um banco diferente da API, causando inconsistências.**  
-
----
-
-## **Conclusão**
-Os testes identificaram que a **API está descartando os registros do CSV antes da inserção**. Com as correções sugeridas, os uploads devem funcionar corretamente, garantindo que as ordens de serviço sejam **salvas no banco e consultadas depois**.
-
+- **Adicionar validação para valores inválidos (`cinquenta`, `-300`) e retornar erro adequado.**  
